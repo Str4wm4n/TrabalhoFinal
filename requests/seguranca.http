@@ -1,0 +1,75 @@
+### Testes das regras de segurança da API
+### Use com a extensão "REST Client" do VS Code (clique em "Send Request").
+### Rode primeiro os dois logins: os tokens são reaproveitados nas outras requisições.
+
+@baseUrl = http://localhost:8080
+
+### Login ADMIN
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@imobiliaria.com", "senha": "admin123" }
+
+### Login USER (cliente)
+# @name loginUser
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "cliente@imobiliaria.com", "senha": "cliente123" }
+
+@tokenAdmin = {{loginAdmin.response.body.token}}
+@tokenUser = {{loginUser.response.body.token}}
+
+### 1. GET /imoveis sem token -> esperado 200 (vitrine pública)
+GET {{baseUrl}}/imoveis
+
+### 2. POST /imoveis sem token -> esperado 401 (não autenticado)
+POST {{baseUrl}}/imoveis
+Content-Type: application/json
+
+{ "titulo": "Teste sem token", "finalidade": "venda", "status": "disponivel" }
+
+### 3. POST /imoveis com token USER -> esperado 403 (autenticado, mas sem permissão)
+POST {{baseUrl}}/imoveis
+Authorization: Bearer {{tokenUser}}
+Content-Type: application/json
+
+{ "titulo": "Teste com USER", "finalidade": "venda", "status": "disponivel" }
+
+### 4. POST /imoveis com token ADMIN -> esperado 201 (criado)
+POST {{baseUrl}}/imoveis
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{
+  "titulo": "Imóvel criado pelo ADMIN",
+  "finalidade": "venda",
+  "status": "disponivel",
+  "precoVenda": 250000,
+  "tipoImovel": { "id": 1 },
+  "bairro": { "id": 1 }
+}
+
+### 5. PATCH /imoveis/1/status com token USER -> esperado 403 (só ADMIN altera status)
+PATCH {{baseUrl}}/imoveis/1/status
+Authorization: Bearer {{tokenUser}}
+Content-Type: application/json
+
+{ "status": "vendido" }
+
+### 6. PATCH /imoveis/1/status com token ADMIN -> esperado 200
+PATCH {{baseUrl}}/imoveis/1/status
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "status": "disponivel" }
+
+### 7. Leituras públicas usadas pela vitrine -> esperado 200 sem token
+GET {{baseUrl}}/bairros
+
+###
+GET {{baseUrl}}/tipos-imoveis
+
+###
+GET {{baseUrl}}/fotos
