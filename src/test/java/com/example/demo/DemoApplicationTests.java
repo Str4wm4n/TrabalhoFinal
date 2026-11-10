@@ -88,18 +88,49 @@ class DemoApplicationTests {
     }
 
     @Test
-    void authenticatedUserCanChangePropertyStatus() throws Exception {
-        ImovelModel property = new ImovelModel();
-        property.setTitulo("Imóvel teste");
-        property.setStatus("RASCUNHO");
-        property = imovelRepository.save(property);
+    void userCannotChangePropertyStatus() throws Exception {
+        ImovelModel property = savedProperty();
 
         mockMvc.perform(patch("/imoveis/{id}/status", property.getId())
                         .header("Authorization", "Bearer " + tokenFor("USER"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"status\":\"DISPONIVEL\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void adminCanChangePropertyStatus() throws Exception {
+        ImovelModel property = savedProperty();
+
+        mockMvc.perform(patch("/imoveis/{id}/status", property.getId())
+                        .header("Authorization", "Bearer " + tokenFor("ADMIN"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"DISPONIVEL\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("DISPONIVEL"));
+    }
+
+    @Test
+    void catalogReadsArePublic() throws Exception {
+        mockMvc.perform(get("/bairros")).andExpect(status().isOk());
+        mockMvc.perform(get("/tipos-imoveis")).andExpect(status().isOk());
+        mockMvc.perform(get("/fotos")).andExpect(status().isOk());
+    }
+
+    @Test
+    void userCannotCreateBairro() throws Exception {
+        mockMvc.perform(post("/bairros")
+                        .header("Authorization", "Bearer " + tokenFor("USER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nome\":\"Bairro teste\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    private ImovelModel savedProperty() {
+        ImovelModel property = new ImovelModel();
+        property.setTitulo("Imóvel teste");
+        property.setStatus("RASCUNHO");
+        return imovelRepository.save(property);
     }
 
     @Test
