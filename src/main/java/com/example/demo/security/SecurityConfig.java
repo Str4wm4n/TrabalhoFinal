@@ -13,6 +13,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class SecurityConfig {
 
+    private static final String[] CATALOGO = {
+            "/imoveis", "/imoveis/**",
+            "/bairros", "/bairros/**",
+            "/tipos-imoveis", "/tipos-imoveis/**",
+            "/fotos", "/fotos/**"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -33,11 +40,15 @@ public class SecurityConfig {
                         }))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/imoveis", "/imoveis/**").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/imoveis/*/status").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/imoveis", "/imoveis/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/imoveis", "/imoveis/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/imoveis", "/imoveis/**").hasRole("ADMIN")
+                        // Vitrine pública: qualquer visitante pode consultar o catálogo
+                        .requestMatchers(HttpMethod.GET, CATALOGO).permitAll()
+                        // Alterar status (ex.: vendido, alugado) é tarefa da imobiliária
+                        .requestMatchers(HttpMethod.PATCH, "/imoveis/*/status").hasRole("ADMIN")
+                        // Qualquer escrita no catálogo é exclusiva do ADMIN
+                        .requestMatchers(HttpMethod.POST, CATALOGO).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, CATALOGO).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, CATALOGO).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, CATALOGO).hasRole("ADMIN")
                         .requestMatchers("/users", "/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
