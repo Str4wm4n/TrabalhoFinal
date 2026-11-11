@@ -73,8 +73,8 @@ O script pode ser executado mais de uma vez sem duplicar dados. Ele cria:
 | `admin@imobiliaria.com` | `admin123` | ADMIN |
 | `cliente@imobiliaria.com` | `cliente123` | USER |
 
-…além de 4 bairros, 4 tipos de imóvel e 6 imóveis (3 para venda e 3 para
-aluguel). As senhas ficam no banco como hash **BCrypt**.
+…além de 4 bairros, 4 tipos de imóvel e 10 imóveis: 8 disponíveis (para venda
+e aluguel), 1 reservado e 1 alugado. As senhas ficam no banco como hash **BCrypt**.
 
 ## 4. Front-end (porta 3000)
 
@@ -86,9 +86,9 @@ npm install
 npm run dev
 ```
 
-Abra <http://localhost:3000>. A vitrine busca `GET /imoveis` pelo servidor do
-Next.js. Para apontar para outra API, crie `frontend/.env.local` com
-`API_URL=http://localhost:8080` (veja [`frontend/README.md`](frontend/README.md)).
+Abra <http://localhost:3000>. A vitrine chama `GET /imoveis/busca` direto do
+navegador. Para apontar para outra API, crie `frontend/.env.local` com
+`NEXT_PUBLIC_API_URL=http://localhost:8080` (veja [`frontend/README.md`](frontend/README.md)).
 
 ## Regras de segurança
 

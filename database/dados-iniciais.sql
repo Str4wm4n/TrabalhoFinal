@@ -33,7 +33,8 @@ INSERT IGNORE INTO tipos_imoveis (id, nome, descricao, created_at, updated_at) V
   (3, 'Terreno',     'Lote sem construção',                     NOW(), NOW()),
   (4, 'Sala comercial', 'Espaço para escritório ou comércio',   NOW(), NOW());
 
--- finalidade: 'venda' ou 'aluguel' | status: 'disponivel'
+-- finalidade: 'venda' ou 'aluguel' | status: 'disponivel', 'reservado', 'alugado' ou 'vendido'
+-- (só os disponíveis aparecem na vitrine)
 INSERT IGNORE INTO imoveis
   (id, titulo, descricao, preco_venda, preco_aluguel, finalidade, status,
    dormitorios, banheiros, garagem, area_total, area_construida,
@@ -75,4 +76,28 @@ VALUES
       NULL, 1300.00, 'aluguel', 'disponivel',
       NULL, 1, 0, 45.00, 45.00,
       'Rua Dr. Bozano', '600', 'Sala 504', '97015-001',
-      'Ar-condicionado, recepção no prédio', FALSE, 4, 1, NOW(), NOW());
+      'Ar-condicionado, recepção no prédio', FALSE, 4, 1, NOW(), NOW()),
+  (7, 'Apartamento com vista no Patronato',
+      'Apartamento alto, com vista para a serra e muita luz natural.',
+      310000.00, NULL, 'venda', 'disponivel',
+      2, 2, 1, 70.00, 70.00,
+      'Rua Venâncio Aires', '1750', 'Apto 801', '97010-005',
+      'Vista panorâmica, suíte, salão de festas', FALSE, 2, 4, NOW(), NOW()),
+  (8, 'Casa térrea com garagem dupla',
+      'Casa térrea em rua tranquila, pronta para morar.',
+      NULL, 2400.00, 'aluguel', 'disponivel',
+      3, 2, 2, 250.00, 140.00,
+      'Rua Tuiuti', '320', NULL, '97050-320',
+      'Pátio, churrasqueira, garagem dupla', FALSE, 1, 3, NOW(), NOW()),
+  (9, 'Cobertura duplex no Centro',
+      'Cobertura com terraço. Já tem proposta aceita.',
+      890000.00, NULL, 'venda', 'reservado',
+      3, 3, 2, 180.00, 180.00,
+      'Rua Floriano Peixoto', '900', 'Cobertura', '97015-370',
+      'Terraço, piscina, churrasqueira', FALSE, 2, 1, NOW(), NOW()),
+  (10, 'Kitnet perto da UFSM',
+      'Kitnet compacta a uma quadra do campus.',
+      NULL, 800.00, 'aluguel', 'alugado',
+      1, 1, 0, 28.00, 28.00,
+      'Rua Erly de Almeida Lima', '45', 'Fundos', '97105-120',
+      'Mobiliada', FALSE, 2, 2, NOW(), NOW());
