@@ -126,6 +126,26 @@ class DemoApplicationTests {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    void duplicateUserEmailReturns409() throws Exception {
+        String body = "{\"nome\":\"Cliente\",\"email\":\"" + UUID.randomUUID()
+                + "@example.test\",\"senha\":\"senha123\",\"tipo\":\"USER\"}";
+        String token = tokenFor("ADMIN");
+
+        mockMvc.perform(post("/users")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/users")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isConflict())
+                .andExpect(status().reason("Já existe um usuário com este e-mail."));
+    }
+
     private ImovelModel savedProperty() {
         ImovelModel property = new ImovelModel();
         property.setTitulo("Imóvel teste");

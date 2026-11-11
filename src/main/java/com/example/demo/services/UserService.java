@@ -34,6 +34,10 @@ public class UserService {
     }
 
     public UserModel insert(UserDTO dto) {
+        if (dto.getEmail() != null && repository.existsByEmail(dto.getEmail())) {
+            throw emailEmUso();
+        }
+
         UserModel user = new UserModel();
 
         user.setNome(dto.getNome());
@@ -53,6 +57,9 @@ public class UserService {
         if (user == null) {
             return null;
         }
+        if (dto.getEmail() != null && repository.existsByEmailAndIdNot(dto.getEmail(), dto.getId())) {
+            throw emailEmUso();
+        }
 
         user.setNome(dto.getNome());
         user.setEmail(dto.getEmail());
@@ -62,6 +69,10 @@ public class UserService {
         }
 
         return repository.save(user);
+    }
+
+    private ResponseStatusException emailEmUso() {
+        return new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com este e-mail.");
     }
 
     private String normalizeRole(String role) {

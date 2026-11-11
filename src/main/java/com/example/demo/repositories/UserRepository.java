@@ -7,4 +7,8 @@ import com.example.demo.models.UserModel;
 public interface UserRepository extends JpaRepository<UserModel, Integer> {
 
     java.util.Optional<UserModel> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Integer id);
 }

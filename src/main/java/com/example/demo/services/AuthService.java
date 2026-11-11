@@ -15,6 +15,8 @@ import com.example.demo.security.JwtService;
 @Service
 public class AuthService {
 
+    private static final String CREDENCIAIS_INVALIDAS = "E-mail ou senha inválidos.";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -32,11 +34,11 @@ public class AuthService {
         UserModel user = userRepository.findByEmail(email)
                 .filter(account -> account.getSenha() != null
                         && passwordEncoder.matches(senha, account.getSenha()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, CREDENCIAIS_INVALIDAS));
 
         if (user.getTipo() == null
                 || !(user.getTipo().equalsIgnoreCase("ADMIN") || user.getTipo().equalsIgnoreCase("USER"))) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, CREDENCIAIS_INVALIDAS);
         }
 
         user.setTipo(user.getTipo().toUpperCase(Locale.ROOT));

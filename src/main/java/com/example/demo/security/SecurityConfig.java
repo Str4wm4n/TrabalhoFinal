@@ -40,6 +40,9 @@ public class SecurityConfig {
                         }))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/public/login").permitAll()
+                        // /error só formata a resposta de um erro que já aconteceu;
+                        // bloqueá-la transformava qualquer 400/404/409 em 401
+                        .requestMatchers("/error").permitAll()
                         // Vitrine pública: qualquer visitante pode consultar o catálogo
                         .requestMatchers(HttpMethod.GET, CATALOGO).permitAll()
                         // Alterar status (ex.: vendido, alugado) é tarefa da imobiliária
