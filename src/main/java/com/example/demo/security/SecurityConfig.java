@@ -39,7 +39,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"status\":403,\"error\":\"Forbidden\"}");
                         }))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/public/login").permitAll()
                         // Vitrine pública: qualquer visitante pode consultar o catálogo
                         .requestMatchers(HttpMethod.GET, CATALOGO).permitAll()
                         // Alterar status (ex.: vendido, alugado) é tarefa da imobiliária

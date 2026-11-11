@@ -92,8 +92,9 @@ Next.js. Para apontar para outra API, crie `frontend/.env.local` com
 
 ## Regras de segurança
 
-Login em `POST /auth/login` com `{ "email": "...", "senha": "..." }`. A
-resposta traz um token, enviado nas próximas requisições no cabeçalho
+Login em `POST /public/login` com `{ "email": "...", "senha": "..." }`. A
+resposta traz `{ "token": "...", "tipo": "ADMIN" | "USER" }`. O token vai nas
+próximas requisições no cabeçalho
 `Authorization: Bearer <token>`.
 
 | Rota | Sem token | USER | ADMIN |

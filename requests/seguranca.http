@@ -6,14 +6,14 @@
 
 ### Login ADMIN
 # @name loginAdmin
-POST {{baseUrl}}/auth/login
+POST {{baseUrl}}/public/login
 Content-Type: application/json
 
 { "email": "admin@imobiliaria.com", "senha": "admin123" }
 
 ### Login USER (cliente)
 # @name loginUser
-POST {{baseUrl}}/auth/login
+POST {{baseUrl}}/public/login
 Content-Type: application/json
 
 { "email": "cliente@imobiliaria.com", "senha": "cliente123" }

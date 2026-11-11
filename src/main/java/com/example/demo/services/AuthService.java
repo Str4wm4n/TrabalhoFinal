@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.demo.dtos.LoginResponseDTO;
 import com.example.demo.models.UserModel;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.JwtService;
@@ -27,7 +28,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public String login(String email, String senha) {
+    public LoginResponseDTO login(String email, String senha) {
         UserModel user = userRepository.findByEmail(email)
                 .filter(account -> account.getSenha() != null
                         && passwordEncoder.matches(senha, account.getSenha()))
@@ -39,6 +40,6 @@ public class AuthService {
         }
 
         user.setTipo(user.getTipo().toUpperCase(Locale.ROOT));
-        return jwtService.generateToken(user);
+        return new LoginResponseDTO(jwtService.generateToken(user), user.getTipo());
     }
 }

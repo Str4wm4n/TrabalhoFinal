@@ -35,7 +35,7 @@ public class JwtService {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(user.getEmail())
-                .claim("role", user.getTipo())
+                .claim("tipo", user.getTipo())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusMillis(expirationMillis)))
                 .signWith(signingKey)

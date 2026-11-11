@@ -142,12 +142,12 @@ class DemoApplicationTests {
         user.setTipo("USER");
         userRepository.save(user);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/public/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"" + user.getEmail() + "\",\"senha\":\"senha123\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").isNotEmpty())
-                .andExpect(jsonPath("$.tipo").value("Bearer"));
+                .andExpect(jsonPath("$.tipo").value("USER"));
     }
 
     private String tokenFor(String role) {

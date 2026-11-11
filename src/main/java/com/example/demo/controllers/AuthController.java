@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dtos.LoginResponseDTO;
 import com.example.demo.services.AuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/public")
 public class AuthController {
 
     private final AuthService authService;
@@ -19,14 +20,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        String token = authService.login(request.email(), request.senha());
-        return ResponseEntity.ok(new LoginResponse(token, "Bearer"));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request.email(), request.senha()));
     }
 
     public record LoginRequest(String email, String senha) {
-    }
-
-    public record LoginResponse(String token, String tipo) {
     }
 }
