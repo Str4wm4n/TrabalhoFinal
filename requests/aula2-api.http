@@ -1,0 +1,66 @@
+### Aula 2 — Como a API se comporta (o que o front-end vai precisar tratar)
+### Use com a extensão "REST Client" do VS Code. Rode na ordem, de cima para baixo.
+
+@baseUrl = http://localhost:8080
+
+### 1. GET /imoveis sem token -> 200 (a vitrine é pública)
+GET {{baseUrl}}/imoveis
+
+### 2. Login do admin -> 200 com { "token": "...", "tipo": "ADMIN" }
+# @name loginAdmin
+POST {{baseUrl}}/public/login
+Content-Type: application/json
+
+{ "email": "admin@imobiliaria.com", "senha": "admin123" }
+
+@tokenAdmin = {{loginAdmin.response.body.token}}
+
+### 3. Copie o token da resposta acima e cole em https://jwt.io
+###    O payload mostra "sub" (e-mail), "tipo" (ADMIN/USER) e "exp" (expiração).
+###    Dá para LER, mas não para ALTERAR: a assinatura depende do JWT_SECRET.
+
+### 4. POST /bairros sem token -> 401 (rota protegida)
+POST {{baseUrl}}/bairros
+Content-Type: application/json
+
+{ "nome": "Bairro Aula 2", "cidade": "Santa Maria", "estado": "RS" }
+
+### 5. POST /bairros com token admin -> 201 (admin tem permissão)
+POST {{baseUrl}}/bairros
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "nome": "Bairro Aula 2", "cidade": "Santa Maria", "estado": "RS" }
+
+### 6. POST /users criando um cliente, com token admin -> 201
+###    (se o e-mail já existir, troque-o antes de enviar)
+POST {{baseUrl}}/users
+Authorization: Bearer {{tokenAdmin}}
+Content-Type: application/json
+
+{ "nome": "Cliente Aula 2", "email": "aula2.cliente@imobiliaria.com", "senha": "cliente123", "tipo": "USER" }
+
+### 7. Login com o cliente criado -> 200 com "tipo": "USER"
+# @name loginCliente
+POST {{baseUrl}}/public/login
+Content-Type: application/json
+
+{ "email": "aula2.cliente@imobiliaria.com", "senha": "cliente123" }
+
+@tokenCliente = {{loginCliente.response.body.token}}
+
+### 8. POST /bairros com token do cliente -> 403 (logado, mas sem permissão)
+POST {{baseUrl}}/bairros
+Authorization: Bearer {{tokenCliente}}
+Content-Type: application/json
+
+{ "nome": "Bairro do cliente" }
+
+### 9. POST /bairros com token adulterado -> 401 (assinatura inválida)
+###    No jwt.io, cole o token do cliente, troque "tipo": "USER" por "ADMIN"
+###    e cole o token alterado abaixo, no lugar de COLE_AQUI.
+POST {{baseUrl}}/bairros
+Authorization: Bearer COLE_AQUI
+Content-Type: application/json
+
+{ "nome": "Bairro adulterado" }
