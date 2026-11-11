@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { SiteFooter, SiteHeader, SiteHeaderFallback } from "@/components/SiteHeader";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,7 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        {/* O cabeçalho lê a rota atual e a sessão; o fallback aparece enquanto isso */}
+        <Suspense fallback={<SiteHeaderFallback />}>
+          <SiteHeader />
+        </Suspense>
+        {children}
+        <SiteFooter />
+      </body>
     </html>
   );
 }

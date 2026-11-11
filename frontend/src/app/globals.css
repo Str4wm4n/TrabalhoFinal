@@ -729,10 +729,6 @@ a {
     height: 68px;
   }
 
-  .main-nav {
-    display: none;
-  }
-
   .header-link {
     font-size: 10px;
   }
@@ -833,5 +829,623 @@ a {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Aula 2 — navegação por perfil, vitrine com filtros, login e áreas privadas
+   ========================================================================== */
+
+:root {
+  --danger: #a4452c;
+  --danger-bg: #fbf0ec;
+  --notice-bg: #f1f5e1;
+}
+
+/* ---- Cabeçalho ---- */
+
+.main-nav a[aria-current="page"] {
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+.header-actions {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+.header-placeholder {
+  width: 60px;
+  height: 14px;
+}
+
+.header-user {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.header-email {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--lime);
+  color: var(--green-dark);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.header-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ---- Botões e mensagens ---- */
+
+.button {
+  min-height: 44px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--green);
+  background: var(--green);
+  color: var(--white);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 160ms ease;
+}
+
+.button:hover {
+  background: var(--green-dark);
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.button-outline {
+  background: transparent;
+  color: var(--green);
+}
+
+.button-outline:hover {
+  background: var(--notice-bg);
+}
+
+.text-button {
+  margin-top: 12px;
+  padding: 0;
+  display: inline-block;
+  border: 0;
+  background: none;
+  color: var(--green);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  display: inline-block;
+  vertical-align: -1px;
+  border: 2px solid var(--line);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.notice {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-left: 3px solid #8b9b66;
+  background: var(--notice-bg);
+  color: var(--green-dark);
+  font-size: 13px;
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+.form-error-box {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--danger);
+  background: var(--danger-bg);
+}
+
+.form-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ---- Campos de formulário ---- */
+
+.field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > span {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d6dbd0;
+  border-radius: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--green);
+  outline: 2px solid rgba(38, 75, 62, 0.15);
+}
+
+.field input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.field-inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.field-inline select {
+  width: auto;
+  min-height: 36px;
+}
+
+/* ---- Vitrine: filtros, barra de resultados e paginação ---- */
+
+.filters {
+  margin-bottom: 22px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr auto;
+  align-items: end;
+  gap: 14px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.filter-actions .text-button {
+  margin: 0;
+}
+
+.filters-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.results-bar {
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.results-bar p {
+  margin: 0;
+}
+
+.property-card {
+  display: block;
+}
+
+.property-card:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 2px;
+}
+
+.pagination {
+  margin-top: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pagination ol {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+}
+
+.pagination button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.pagination button[aria-current="page"] {
+  border-color: var(--green);
+  background: var(--green);
+  color: var(--white);
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ---- Páginas internas ---- */
+
+.page {
+  min-height: calc(100vh - 82px - 90px);
+  padding: 48px 8.2% 80px;
+}
+
+.page-narrow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.back-link {
+  margin-bottom: 22px;
+  display: inline-block;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---- Detalhe do imóvel ---- */
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+.detail-art {
+  height: 380px;
+}
+
+.detail-summary h1 {
+  margin: 14px 0 8px;
+  font-family: var(--serif);
+  font-size: clamp(30px, 3.4vw, 44px);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.detail-summary .property-address {
+  min-height: 0;
+  font-size: 13px;
+}
+
+.status-unavailable {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.detail-price {
+  margin: 26px 0;
+  padding: 18px 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-price span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.detail-price strong {
+  color: var(--green);
+  font-size: 28px;
+}
+
+.detail-actions {
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-body {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 36px;
+}
+
+.detail-body h2,
+.dashboard h2 {
+  margin: 0 0 12px;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.detail-body p {
+  margin: 0;
+  color: #4f5c55;
+  font-size: 14px;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.detail-body .property-details li {
+  font-size: 12px;
+}
+
+.detail-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.detail-facts div {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-facts dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.detail-facts dd {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+/* ---- Login ---- */
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.auth-card h1 {
+  margin: 12px 0 22px;
+  font-family: var(--serif);
+  font-size: 36px;
+  font-weight: 500;
+}
+
+.auth-card .form-hint {
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---- Área do cliente e painel ---- */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+.dashboard-heading h1 {
+  margin: 12px 0 6px;
+  font-family: var(--serif);
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: 500;
+}
+
+.tile-grid,
+.stat-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.tile,
+.stat {
+  width: 100%;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.tile p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.tile-soon {
+  border-style: dashed;
+}
+
+.tile-badge {
+  margin-bottom: 12px;
+  display: inline-block;
+  color: #73854e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.stat strong {
+  display: block;
+  color: var(--green);
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+}
+
+.stat span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ---- Responsivo ---- */
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+
+  .page {
+    padding-right: 5%;
+    padding-left: 5%;
+  }
+
+  .detail-grid,
+  .detail-body {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-art {
+    height: 280px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .header-email {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  /* No celular o menu continua visível: quebra em duas linhas */
+  .site-header {
+    height: auto;
+    min-height: 68px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  .main-nav {
+    order: 3;
+    width: 100%;
+    gap: 22px;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .field input,
+  .field select {
+    font-size: 16px; /* evita o zoom automático do iOS ao focar */
+  }
+
+  .results-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .page {
+    padding-top: 28px;
+    padding-bottom: 56px;
+  }
+
+  .auth-card {
+    padding: 24px 20px;
+  }
+
+  .tile-grid,
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-facts {
+    grid-template-columns: 1fr;
   }
 }

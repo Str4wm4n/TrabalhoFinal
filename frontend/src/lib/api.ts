@@ -1,113 +1,130 @@
-type JsonRecord = Record<string, unknown>;
+"use client";
 
-export interface Imovel {
-  id: number;
-  titulo: string;
-  descricao?: string | null;
-  precoVenda?: number | string | null;
-  precoAluguel?: number | string | null;
-  finalidade?: string | null;
-  status?: string | null;
-  dormitorios?: number | null;
-  banheiros?: number | null;
-  areaTotal?: number | string | null;
-  endereco?: string | null;
-  numero?: string | null;
-  destaque?: boolean | null;
-  tipoImovel?: { nome?: string | null } | null;
-  bairro?: { nome?: string | null; cidade?: string | null } | null;
-}
+import { encerrarSessao, obterToken } from "./auth";
 
+/**
+ * Endereço da API Spring. Variáveis usadas no navegador precisam do
+ * prefixo NEXT_PUBLIC_ (veja frontend/.env.example).
+ */
+export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080").replace(/\/$/, "");
+
+/** Erro já traduzido para uma mensagem que pode ser mostrada na tela. */
 export class ApiError extends Error {
-  constructor(message: string) {
+  constructor(
+    /** Status HTTP (0 quando nem foi possível conectar). */
+    public readonly status: number,
+    message: string,
+  ) {
     super(message);
     this.name = "ApiError";
   }
 }
 
-function isRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+interface Opcoes {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  body?: unknown;
+  /** true = envia o token (rota protegida). */
+  autenticado?: boolean;
+  signal?: AbortSignal;
 }
 
-function isOptionalString(value: unknown): boolean {
-  return value == null || typeof value === "string";
+/** Lê o campo "message" que o Spring coloca no JSON de erro, se houver. */
+async function mensagemDoBackend(resposta: Response): Promise<string | undefined> {
+  try {
+    const corpo: unknown = await resposta.json();
+    if (typeof corpo === "object" && corpo !== null && "message" in corpo) {
+      const mensagem = (corpo as { message: unknown }).message;
+      if (typeof mensagem === "string" && mensagem.trim() && !/^\d{3} [A-Z_]+$/.test(mensagem)) {
+        return mensagem;
+      }
+    }
+  } catch {
+    // Corpo vazio ou que não é JSON: usa a mensagem padrão.
+  }
+  return undefined;
 }
 
-function isOptionalNumber(value: unknown): boolean {
-  return (
-    value == null ||
-    (typeof value === "number" && Number.isFinite(value)) ||
-    (typeof value === "string" &&
-      value.trim() !== "" &&
-      Number.isFinite(Number(value)))
-  );
+/** Converte a resposta de erro da API em uma mensagem clara (nunca em JSON). */
+async function traduzirErro(resposta: Response, autenticado: boolean): Promise<ApiError> {
+  const doBackend = await mensagemDoBackend(resposta);
+  const { status } = resposta;
+
+  if (status === 401) {
+    if (autenticado) {
+      // Token expirado ou inválido: apaga o token; as telas protegidas
+      // percebem a sessão vazia e levam ao login.
+      encerrarSessao("expirada");
+      return new ApiError(401, "Sua sessão expirou. Faça login novamente.");
+    }
+    return new ApiError(401, doBackend ?? "Não autorizado.");
+  }
+  if (status === 403) {
+    return new ApiError(403, "Acesso negado: seu perfil não tem permissão para esta ação.");
+  }
+  if (status === 404) {
+    return new ApiError(404, doBackend ?? "O item procurado não foi encontrado.");
+  }
+  if (status === 409) {
+    return new ApiError(409, doBackend ?? "A operação não é permitida pelas regras do sistema.");
+  }
+  if (status === 400) {
+    return new ApiError(400, doBackend ?? "Os dados enviados são inválidos.");
+  }
+  if (status >= 500) {
+    return new ApiError(status, "O servidor encontrou um erro. Tente novamente em instantes.");
+  }
+  return new ApiError(status, doBackend ?? `Não foi possível concluir a operação (erro ${status}).`);
 }
 
-function isOptionalNamedObject(value: unknown): boolean {
-  return value == null || (isRecord(value) && isOptionalString(value.nome));
-}
+/** Chamada central à API: monta a URL, envia o token e trata os erros. */
+export async function apiFetch<T>(caminho: string, opcoes: Opcoes = {}): Promise<T> {
+  const { method = "GET", body, autenticado = false, signal } = opcoes;
+  const headers: Record<string, string> = {};
 
-function isValidImovel(value: unknown): value is Imovel {
-  if (!isRecord(value) || !Number.isInteger(value.id) || typeof value.titulo !== "string") {
-    return false;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  if (autenticado) {
+    const token = obterToken();
+    if (!token) {
+      encerrarSessao("expirada");
+      throw new ApiError(401, "Sua sessão expirou. Faça login novamente.");
+    }
+    headers.Authorization = `Bearer ${token}`;
   }
 
-  const stringFields = [
-    "descricao",
-    "finalidade",
-    "status",
-    "endereco",
-    "numero",
-  ];
-  const numberFields = [
-    "precoVenda",
-    "precoAluguel",
-    "dormitorios",
-    "banheiros",
-    "areaTotal",
-  ];
-
-  return (
-    stringFields.every((field) => isOptionalString(value[field])) &&
-    numberFields.every((field) => isOptionalNumber(value[field])) &&
-    (value.destaque == null || typeof value.destaque === "boolean") &&
-    isOptionalNamedObject(value.tipoImovel) &&
-    (value.bairro == null ||
-      (isRecord(value.bairro) &&
-        isOptionalString(value.bairro.nome) &&
-        isOptionalString(value.bairro.cidade)))
-  );
-}
-
-export async function getImoveis(): Promise<Imovel[]> {
-  const apiUrl = process.env.API_URL ?? "http://localhost:8080";
-  let response: Response;
-
+  let resposta: Response;
   try {
-    response = await fetch(`${apiUrl.replace(/\/$/, "")}/imoveis`, {
+    resposta = await fetch(`${API_URL}${caminho}`, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
       cache: "no-store",
+      signal,
     });
-  } catch {
+  } catch (erro) {
+    if (erro instanceof DOMException && erro.name === "AbortError") throw erro;
     throw new ApiError(
-      "Não foi possível conectar ao backend Java. Confirme se a API está em execução.",
+      0,
+      "Não foi possível conectar ao servidor. Verifique se a API está em execução.",
     );
   }
 
-  if (!response.ok) {
-    throw new ApiError(`A API respondeu com o erro HTTP ${response.status}.`);
+  if (!resposta.ok) {
+    throw await traduzirErro(resposta, autenticado);
   }
 
-  let payload: unknown;
+  if (resposta.status === 204 || resposta.headers.get("Content-Length") === "0") {
+    return undefined as T;
+  }
 
   try {
-    payload = await response.json();
+    return (await resposta.json()) as T;
   } catch {
-    throw new ApiError("A API retornou uma resposta que não é um JSON válido.");
+    throw new ApiError(resposta.status, "A API retornou uma resposta em formato inesperado.");
   }
+}
 
-  if (!Array.isArray(payload) || !payload.every(isValidImovel)) {
-    throw new ApiError("A API retornou uma lista de imóveis em formato inválido.");
-  }
-
-  return payload;
+/** Mensagem amigável para qualquer erro capturado num try/catch. */
+export function mensagemDeErro(erro: unknown): string {
+  if (erro instanceof ApiError) return erro.message;
+  return "Algo deu errado. Tente novamente.";
 }

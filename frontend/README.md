@@ -15,10 +15,10 @@ Na pasta `frontend`, instale as dependências:
 npm install
 ```
 
-Opcionalmente, configure outra URL para a API criando `.env.local`:
+Opcionalmente, configure outra URL para a API criando `.env.local` (veja `.env.example`):
 
 ```env
-API_URL=http://localhost:8080
+NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
 Inicie o frontend:
@@ -27,12 +27,10 @@ Inicie o frontend:
 npm run dev
 ```
 
-Abra <http://localhost:3000>. A página consulta `GET /imoveis` no servidor
-Next.js, então a URL da API não é exposta ao navegador e essa chamada não
-depende de CORS no backend.
-
-O backend precisa estar configurado com banco de dados e `JWT_SECRET`. A rota
-`GET /imoveis` é pública conforme as regras atuais de segurança do Spring.
+Abra <http://localhost:3000>. O navegador chama a API direto (com `Authorization:
+Bearer <token>` nas rotas protegidas), então o backend precisa liberar CORS para
+`http://localhost:3000`, o que já é o padrão do projeto. O token fica no
+`localStorage` e é apagado no logout ou quando a API responde 401.
 
 ## Verificações
 
