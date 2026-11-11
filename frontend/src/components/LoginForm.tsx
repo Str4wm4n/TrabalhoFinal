@@ -100,7 +100,7 @@ export function LoginForm() {
     <div className="auth-card">
       <p className="eyebrow">
         <span className="eyebrow-line" />
-        ÁREA DO CLIENTE E DO ADMIN
+        Teto &amp; Tretas · Acesso
       </p>
       <h1>Entrar</h1>
 

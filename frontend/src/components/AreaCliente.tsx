@@ -25,10 +25,10 @@ export function AreaCliente() {
       <div className="dashboard-heading">
         <p className="eyebrow">
           <span className="eyebrow-line" />
-          MINHA ÁREA
+          Minha área · Teto &amp; Tretas
         </p>
         <h1>Olá, {usuario.nome.split(" ")[0]}.</h1>
-        <p className="form-hint">Conectado como {usuario.email}.</p>
+        <p className="form-hint">Que bom ter você na Teto &amp; Tretas. Conectado como {usuario.email}.</p>
       </div>
 
       <div className="tile-grid">

@@ -1,4 +1,4 @@
-# Imobiliária — API Spring Boot + vitrine Next.js
+# Teto & Tretas — API Spring Boot + vitrine Next.js
 
 Trabalho final: uma API REST de imobiliária em **Spring Boot** (raiz do
 projeto) consumida por um front-end em **React + Next.js** (pasta

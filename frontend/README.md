@@ -1,4 +1,4 @@
-# Casa Clara — frontend
+# Teto & Tretas — frontend
 
 Frontend em React e Next.js para consultar a API Java de imóveis.
 

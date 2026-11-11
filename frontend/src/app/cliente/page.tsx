@@ -3,7 +3,7 @@ import { AreaCliente } from "@/components/AreaCliente";
 import { RequireRole } from "@/components/RequireRole";
 
 export const metadata: Metadata = {
-  title: "Minha área | Casa Clara",
+  title: "Minha área | Teto & Tretas",
 };
 
 export default function ClientePage() {

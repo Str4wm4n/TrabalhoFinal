@@ -3,7 +3,7 @@ import { PainelAdmin } from "@/components/PainelAdmin";
 import { RequireRole } from "@/components/RequireRole";
 
 export const metadata: Metadata = {
-  title: "Painel | Casa Clara",
+  title: "Painel | Teto & Tretas",
 };
 
 export default function AdminPage() {

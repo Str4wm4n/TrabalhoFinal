@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AREA_INICIAL, encerrarSessao, useSessao } from "@/lib/auth";
+import { IconLogin, IconLogout, LogoMark } from "./Icons";
 
-function Marca() {
+function Marca({ className = "brand" }: { className?: string }) {
   return (
-    <Link className="brand" href="/" aria-label="Casa Clara, página inicial">
-      <span className="brand-mark" aria-hidden="true">
-        C
-      </span>
+    <Link className={className} href="/" aria-label="Teto & Tretas, página inicial">
+      <LogoMark />
       <span>
-        casa<span className="brand-light">clara</span>
+        Teto <span className="brand-amp">&amp;</span> Tretas
       </span>
     </Link>
   );
@@ -62,12 +61,12 @@ export function SiteHeader() {
               <span className="header-email">{sessao.email}</span>
             </span>
             <button type="button" className="header-link header-button" onClick={sair}>
-              Sair
+              <IconLogout /> Sair
             </button>
           </>
         ) : (
           <Link className="header-link" href="/login">
-            Entrar <span aria-hidden="true">↗</span>
+            <IconLogin /> Entrar
           </Link>
         )}
       </div>
@@ -93,15 +92,8 @@ export function SiteHeaderFallback() {
 export function SiteFooter() {
   return (
     <footer className="site-footer" id="contato">
-      <Link className="brand footer-brand" href="/" aria-label="Casa Clara">
-        <span className="brand-mark" aria-hidden="true">
-          C
-        </span>
-        <span>
-          casa<span className="brand-light">clara</span>
-        </span>
-      </Link>
-      <p>Um bom lugar muda tudo.</p>
+      <Marca className="brand footer-brand" />
+      <p>Teto bom, sem treta.</p>
       <span className="footer-note">Projeto demonstrativo · 2026</span>
     </footer>
   );

@@ -14,6 +14,7 @@ import {
   type Pagina,
 } from "@/lib/imovel";
 import { Carregando, MensagemErro, SemResultados } from "./Feedback";
+import { IconSearch } from "./Icons";
 import { PropertyCard } from "./PropertyCard";
 
 /** Lê os filtros da URL. Na URL a página começa em 1 (mais natural); na API, em 0. */
@@ -171,7 +172,9 @@ export function Vitrine() {
         </label>
 
         <div className="filter-actions">
-          <button type="submit" className="button">Filtrar</button>
+          <button type="submit" className="button">
+            <IconSearch /> Filtrar
+          </button>
           {temFiltro && (
             <button type="button" className="text-button" onClick={limparFiltros}>
               Limpar filtros

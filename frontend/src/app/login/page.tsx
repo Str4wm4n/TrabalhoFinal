@@ -4,7 +4,7 @@ import { Carregando } from "@/components/Feedback";
 import { LoginForm } from "@/components/LoginForm";
 
 export const metadata: Metadata = {
-  title: "Entrar | Casa Clara",
+  title: "Entrar | Teto & Tretas",
 };
 
 export default function LoginPage() {

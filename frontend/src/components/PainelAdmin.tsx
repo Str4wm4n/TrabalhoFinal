@@ -18,7 +18,7 @@ async function carregarPainel(signal: AbortSignal) {
     nome: eu.nome,
     totais: [
       { rotulo: "Imóveis cadastrados", valor: imoveis.length },
-      { rotulo: "Imóveis disponíveis", valor: imoveis.filter(ehDisponivel).length },
+      { rotulo: "Imóveis disponíveis", valor: imoveis.filter(ehDisponivel).length, positivo: true },
       { rotulo: "Clientes", valor: usuarios.filter((u) => u.tipo === "USER").length },
       { rotulo: "Bairros", valor: bairros.length },
     ],
@@ -40,14 +40,14 @@ export function PainelAdmin() {
       <div className="dashboard-heading">
         <p className="eyebrow">
           <span className="eyebrow-line" />
-          PAINEL DO ADMINISTRADOR
+          Painel · Teto &amp; Tretas
         </p>
         <h1>Olá, {dados.nome.split(" ")[0]}.</h1>
       </div>
 
       <div className="stat-grid">
         {dados.totais.map((total) => (
-          <div key={total.rotulo} className="stat">
+          <div key={total.rotulo} className={total.positivo ? "stat stat-positive" : "stat"}>
             <strong>{total.valor}</strong>
             <span>{total.rotulo}</span>
           </div>

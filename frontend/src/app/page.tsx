@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Carregando } from "@/components/Feedback";
+import { IconSearch } from "@/components/Icons";
 import { Vitrine } from "@/components/Vitrine";
 
 export default function Home() {
@@ -9,23 +10,23 @@ export default function Home() {
         <div className="hero-copy">
           <p className="eyebrow">
             <span className="eyebrow-line" />
-            SEU PRÓXIMO CAPÍTULO COMEÇA AQUI
+            Imobiliária Teto &amp; Tretas
           </p>
           <h1>
-            Um lugar para
+            Seu próximo teto,
             <br />
-            chamar de <em>seu.</em>
+            <em>sem treta.</em>
           </h1>
           <p className="hero-description">
-            Encontre um endereço que combine com a vida que você quer viver.
-            Boas escolhas começam com o lugar certo.
+            Imóveis para alugar e comprar com informação clara, do primeiro
+            clique até a assinatura do contrato.
           </p>
           <a className="primary-link" href="#imoveis">
-            Explorar imóveis <span aria-hidden="true">↓</span>
+            <IconSearch /> Explorar imóveis
           </a>
           <div className="hero-note">
             <span className="note-dot" />
-            Novos começos, bons endereços.
+            Catálogo atualizado a cada visita.
           </div>
         </div>
         <div className="hero-art" aria-hidden="true">
@@ -52,13 +53,13 @@ export default function Home() {
             <span />
             <span />
           </div>
-          <div className="hero-art-caption">ESPAÇO PARA VIVER BEM</div>
+          <div className="hero-art-caption">SEU PRÓXIMO TETO</div>
         </div>
         <div className="hero-bottom">
-          <span>Encontrar. Sentir. Pertencer.</span>
+          <span>Buscar. Visitar. Morar.</span>
           <span className="hero-count">
-            API JAVA
-            <small> catálogo atualizado a cada visita</small>
+            Alugue ou compre
+            <small>com segurança do início ao fim</small>
           </span>
         </div>
       </section>
@@ -68,9 +69,9 @@ export default function Home() {
           <div>
             <p className="eyebrow">
               <span className="eyebrow-line" />
-              SELEÇÃO CASA CLARA
+              Seleção Teto &amp; Tretas
             </p>
-            <h2>Espaços com potencial.</h2>
+            <h2>Imóveis disponíveis</h2>
           </div>
           <p className="section-description">
             Filtre por bairro, finalidade e faixa de preço. Clique em um imóvel
@@ -87,17 +88,17 @@ export default function Home() {
       <section className="about-section" id="sobre">
         <p className="eyebrow">
           <span className="eyebrow-line" />
-          MAIS QUE UM ENDEREÇO
+          Sobre a Teto &amp; Tretas
         </p>
         <div className="about-content">
           <h2>
-            O começo de uma
+            Treta só no nome.
             <br />
-            boa história.
+            No resto, transparência.
           </h2>
           <p>
-            A Casa Clara aproxima você de espaços onde a vida acontece. Um
-            catálogo simples, direto e conectado à nossa API de imóveis.
+            A Teto &amp; Tretas conecta você a imóveis com preço, status e
+            condições sempre à vista. Sem letra miúda, sem surpresa no contrato.
           </p>
         </div>
       </section>

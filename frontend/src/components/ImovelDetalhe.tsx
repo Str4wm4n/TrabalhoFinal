@@ -16,9 +16,10 @@ import {
   type Imovel,
 } from "@/lib/imovel";
 import { Carregando, MensagemErro } from "./Feedback";
+import { IconArrowLeft, IconMail, IconPin } from "./Icons";
 import { HouseIllustration } from "./PropertyCard";
 
-const EMAIL_IMOBILIARIA = process.env.NEXT_PUBLIC_CONTATO_EMAIL ?? "contato@imobiliaria.com";
+const EMAIL_IMOBILIARIA = process.env.NEXT_PUBLIC_CONTATO_EMAIL ?? "contato@tetoetretas.com.br";
 
 /** Link mailto: com assunto e corpo já preenchidos com os dados do imóvel. */
 function linkContato(imovel: Imovel): string {
@@ -71,7 +72,7 @@ export function ImovelDetalhe() {
 
   const voltar = (
     <Link className="back-link" href="/#imoveis">
-      ← Voltar para a vitrine
+      <IconArrowLeft /> Voltar para a vitrine
     </Link>
   );
 
@@ -143,7 +144,10 @@ export function ImovelDetalhe() {
             </span>
           </div>
           <h1>{imovel.titulo}</h1>
-          <p className="property-address">{enderecoCompleto(imovel)}</p>
+          <p className="property-address">
+            <IconPin size={16} />
+            {enderecoCompleto(imovel)}
+          </p>
 
           <div className="detail-price">
             <span>Valor</span>
@@ -152,7 +156,7 @@ export function ImovelDetalhe() {
 
           <div className="detail-actions">
             <a className="button" href={linkContato(imovel)}>
-              Entrar em contato
+              <IconMail /> Entrar em contato
             </a>
             {/* Regra de negócio: só imóveis disponíveis recebem ofertas */}
             {disponivel && sessao === null && (

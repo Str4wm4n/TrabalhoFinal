@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { IconArea, IconBath, IconBed, IconPin } from "./Icons";
 import {
+  ehDisponivel,
   formatarArea,
   formatarPreco,
   localizacao,
@@ -19,11 +21,12 @@ export function HouseIllustration({ className = "house-illustration" }: { classN
 }
 
 export function PropertyCard({ imovel, index }: { imovel: Imovel; index: number }) {
+  const area = formatarArea(imovel.areaTotal);
   const detalhes = [
-    imovel.dormitorios != null && plural(imovel.dormitorios, "quarto", "quartos"),
-    imovel.banheiros != null && plural(imovel.banheiros, "banheiro", "banheiros"),
-    formatarArea(imovel.areaTotal),
-  ].filter((detalhe): detalhe is string => Boolean(detalhe));
+    imovel.dormitorios != null && { icone: IconBed, texto: plural(imovel.dormitorios, "quarto", "quartos") },
+    imovel.banheiros != null && { icone: IconBath, texto: plural(imovel.banheiros, "banheiro", "banheiros") },
+    area && { icone: IconArea, texto: area },
+  ].filter((detalhe): detalhe is { icone: typeof IconBed; texto: string } => Boolean(detalhe));
 
   return (
     <Link className="property-card" href={`/imoveis/${imovel.id}`}>
@@ -36,14 +39,22 @@ export function PropertyCard({ imovel, index }: { imovel: Imovel; index: number 
       <div className="property-content">
         <div className="property-heading">
           <span className="purpose-label">{rotuloFinalidade(imovel)}</span>
-          <span className="status-label">{rotuloStatus(imovel)}</span>
+          <span className={`status-label${ehDisponivel(imovel) ? "" : " status-unavailable"}`}>
+            {rotuloStatus(imovel)}
+          </span>
         </div>
         <h3>{imovel.titulo}</h3>
-        <p className="property-address">{localizacao(imovel) || "Localização não informada"}</p>
+        <p className="property-address">
+          <IconPin size={15} />
+          {localizacao(imovel) || "Localização não informada"}
+        </p>
         {detalhes.length > 0 && (
           <ul className="property-details" aria-label="Características">
-            {detalhes.map((detalhe) => (
-              <li key={detalhe}>{detalhe}</li>
+            {detalhes.map(({ icone: Icone, texto }) => (
+              <li key={texto}>
+                <Icone size={15} />
+                {texto}
+              </li>
             ))}
           </ul>
         )}
