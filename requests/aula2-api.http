@@ -64,3 +64,20 @@ Authorization: Bearer COLE_AQUI
 Content-Type: application/json
 
 { "nome": "Bairro adulterado" }
+
+### ─── Vitrine: busca com filtros, ordenação e paginação (pública) ───
+### Parâmetros opcionais: bairroId, finalidade (venda|aluguel), precoMin, precoMax,
+### ordem (preco_asc|preco_desc), pagina (começa em 0), tamanho (padrão 6, máx. 50).
+### Só retorna imóveis com status "disponivel".
+
+### Primeira página
+GET {{baseUrl}}/imoveis/busca?pagina=0&tamanho=4
+
+### Aluguéis do mais barato para o mais caro
+GET {{baseUrl}}/imoveis/busca?finalidade=aluguel&ordem=preco_asc
+
+### Filtros combinados: venda entre 200 mil e 500 mil
+GET {{baseUrl}}/imoveis/busca?finalidade=venda&precoMin=200000&precoMax=500000
+
+### Filtro inválido -> 400 com mensagem
+GET {{baseUrl}}/imoveis/busca?finalidade=permuta

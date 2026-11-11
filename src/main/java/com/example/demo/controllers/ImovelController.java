@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.demo.models.ImovelModel;
+import com.example.demo.dtos.PaginaDTO;
 import com.example.demo.dtos.StatusImovelDTO;
 import com.example.demo.services.ImovelService;
 
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -35,6 +38,23 @@ public class ImovelController {
     public ResponseEntity<List<ImovelModel>> getAll() {
         List<ImovelModel> list = service.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    /**
+     * Vitrine pública: imóveis disponíveis, com filtros opcionais,
+     * ordenação por preço e paginação (pagina começa em 0).
+     */
+    @GetMapping("/busca")
+    public ResponseEntity<PaginaDTO<ImovelModel>> buscar(
+            @RequestParam(required = false) Integer bairroId,
+            @RequestParam(required = false) String finalidade,
+            @RequestParam(required = false) BigDecimal precoMin,
+            @RequestParam(required = false) BigDecimal precoMax,
+            @RequestParam(required = false) String ordem,
+            @RequestParam(defaultValue = "0") int pagina,
+            @RequestParam(defaultValue = "6") int tamanho) {
+        return ResponseEntity.ok(PaginaDTO.de(
+                service.buscarVitrine(bairroId, finalidade, precoMin, precoMax, ordem, pagina, tamanho)));
     }
 
     @GetMapping(value = "/{id}")

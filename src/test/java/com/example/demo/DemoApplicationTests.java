@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.example.demo.models.ImovelModel;
 import com.example.demo.models.UserModel;
+import com.example.demo.models.BairroModel;
+import com.example.demo.repositories.BairroRepository;
 import com.example.demo.repositories.ImovelRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.JwtService;
@@ -38,6 +40,9 @@ class DemoApplicationTests {
 
     @Autowired
     private ImovelRepository imovelRepository;
+
+    @Autowired
+    private BairroRepository bairroRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -161,6 +166,54 @@ class DemoApplicationTests {
                         .header("Origin", "http://site-desconhecido.com")
                         .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void vitrineSearchFiltersSortsAndPaginates() throws Exception {
+        BairroModel bairro = bairroRepository.save(new BairroModel(null, "Bairro busca", "Cidade", "RS", null));
+        savedProperty(bairro, "aluguel", "disponivel", null, "1500");
+        savedProperty(bairro, "aluguel", "disponivel", null, "900");
+        savedProperty(bairro, "aluguel", "disponivel", null, "3000");
+        savedProperty(bairro, "aluguel", "alugado", null, "1000");      // não disponível
+        savedProperty(bairro, "venda", "disponivel", "200000", null);   // outra finalidade
+
+        mockMvc.perform(get("/imoveis/busca")
+                        .param("bairroId", bairro.getId().toString())
+                        .param("finalidade", "aluguel")
+                        .param("precoMax", "2000")
+                        .param("ordem", "preco_desc")
+                        .param("tamanho", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElementos").value(2))
+                .andExpect(jsonPath("$.totalPaginas").value(2))
+                .andExpect(jsonPath("$.conteudo[0].precoAluguel").value(1500));
+
+        mockMvc.perform(get("/imoveis/busca")
+                        .param("bairroId", bairro.getId().toString())
+                        .param("ordem", "preco_asc"))
+                .andExpect(jsonPath("$.totalElementos").value(4))
+                .andExpect(jsonPath("$.conteudo[0].precoAluguel").value(900))
+                .andExpect(jsonPath("$.conteudo[3].precoVenda").value(200000));
+    }
+
+    @Test
+    void vitrineSearchRejectsInvalidFilters() throws Exception {
+        mockMvc.perform(get("/imoveis/busca").param("finalidade", "permuta"))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/imoveis/busca").param("precoMin", "500").param("precoMax", "100"))
+                .andExpect(status().isBadRequest());
+    }
+
+    private void savedProperty(BairroModel bairro, String finalidade, String status,
+            String precoVenda, String precoAluguel) {
+        ImovelModel property = new ImovelModel();
+        property.setTitulo("Imóvel " + finalidade);
+        property.setFinalidade(finalidade);
+        property.setStatus(status);
+        property.setBairro(bairro);
+        property.setPrecoVenda(precoVenda == null ? null : new java.math.BigDecimal(precoVenda));
+        property.setPrecoAluguel(precoAluguel == null ? null : new java.math.BigDecimal(precoAluguel));
+        imovelRepository.save(property);
     }
 
     private ImovelModel savedProperty() {
