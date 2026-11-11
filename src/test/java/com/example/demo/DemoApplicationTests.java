@@ -204,6 +204,16 @@ class DemoApplicationTests {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void meReturnsLoggedUserAndRequiresToken() throws Exception {
+        mockMvc.perform(get("/me")).andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/me").header("Authorization", "Bearer " + tokenFor("USER")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tipo").value("USER"))
+                .andExpect(jsonPath("$.senha").doesNotExist());
+    }
+
     private void savedProperty(BairroModel bairro, String finalidade, String status,
             String precoVenda, String precoAluguel) {
         ImovelModel property = new ImovelModel();
